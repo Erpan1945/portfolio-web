@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+/* PENTING: Baris ini memaksa Tailwind v4 untuk mendeteksi class "dark" 
+   pada tag HTML sebagai pemicu dark mode. 
+   Ini menggantikan setting 'darkMode: selector' di config JS.
+*/
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+}
