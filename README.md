@@ -1,67 +1,51 @@
-Personal Web Portfolio - Irfan Abdurrahman
-Aplikasi portofolio pribadi berbasis web yang dirancang untuk menampilkan karya desain grafis, pengembangan aplikasi mobile, dan proyek pengembangan web secara profesional. Proyek ini menggunakan arsitektur modern dengan Laravel sebagai backend API dan Vue.js sebagai frontend interaktif.
+# Personal Web Portfolio - Irfan Abdurrahman
 
-Fitur Utama
-1. Landing & Portfolio Showcase
-Landing View: Halaman utama yang memperkenalkan profil sebagai mahasiswa Sistem Informasi.
+Selamat datang di repositori portofolio digital saya. Aplikasi ini dirancang sebagai wadah profesional untuk menampilkan karya di bidang **Desain Grafis**, **Pengembangan Aplikasi Mobile**, dan **Fullstack Web Development**.
 
-Portfolio Gallery: Galeri dinamis yang menampilkan berbagai proyek yang telah dikerjakan, termasuk detail teknologi yang digunakan.
+![Laravel](https://img.shields.io/badge/Laravel-11-FF2D20?style=for-the-badge&logo=laravel)
+![Vue.js](https://img.shields.io/badge/Vue.js-3-4FC08D?style=for-the-badge&logo=vue.js)
+![TailwindCSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?style=for-the-badge&logo=tailwind-css)
+![Supabase](https://img.shields.io/badge/Supabase-Database-3ECF8E?style=for-the-badge&logo=supabase)
 
-Potozon Gallery: Komponen khusus untuk menampilkan aset visual atau karya desain grafis.
+---
 
-2. Digital Resume (CV View)
-Interactive CV: Halaman khusus untuk menampilkan riwayat pendidikan, pengalaman organisasi (seperti DPM FILKOM UB), dan keahlian teknis secara digital.
+## Fitur
 
-Dynamic Content: Data riwayat hidup dikelola melalui backend dan ditampilkan secara responsif.
+### 1. Landing & Portfolio Showcase
+* **Landing View**: Pengenalan profil interaktif sebagai mahasiswa Sistem Informasi.
+* **Portfolio Gallery**: Galeri dinamis yang menampilkan proyek lengkap dengan detail tech-stack yang digunakan.
+* **Potozon Gallery**: Komponen visual khusus untuk memamerkan aset desain grafis dan karya seni digital.
 
-3. Admin & Content Management
-Admin Dashboard: Panel kendali untuk menambah, mengubah, atau menghapus data proyek dan sertifikat tanpa menyentuh kode program.
+### 2. Digital Resume (CV View)
+* **Interactive CV**: Riwayat pendidikan, pengalaman organisasi (DPM FILKOM UB), dan keahlian teknis dalam format digital yang modern.
+* **Dynamic Content**: Semua data riwayat hidup dikelola melalui backend dan disajikan secara responsif.
 
-Secure Authentication: Sistem login terintegrasi untuk melindungi akses ke dashboard admin.
+### 3. Admin & Content Management (CMS)
+* **Admin Dashboard**: Panel kendali intuitif untuk menambah, mengubah, atau menghapus data proyek dan sertifikat tanpa menyentuh kode.
+* **Secure Authentication**: Sistem login terintegrasi untuk melindungi akses ke dashboard manajemen konten.
 
-4. Integrasi Layanan
-Supabase Integration: Menggunakan Supabase untuk manajemen database atau penyimpanan file secara cloud.
+### 4. Integrasi Layanan & Komunikasi
+* **Supabase Integration**: Manajemen database PostgreSQL dan penyimpanan file (storage) berbasis cloud yang skalabel.
+* **Contact Form**: Jalur komunikasi langsung bagi pengunjung untuk berkolaborasi.
 
-Contact Form: Fitur komunikasi bagi pengunjung untuk menghubungi pemilik portofolio secara langsung.
+---
 
-Teknologi yang Digunakan
-Core Framework: Laravel 11.
+## Teknologi yang Digunakan
 
-Frontend: Vue.js 3 dengan Vue Router untuk navigasi Single Page Application (SPA).
+| Komponen | Teknologi |
+| :--- | :--- |
+| **Core Framework** | Laravel 11 |
+| **Frontend** | Vue.js 3 (Vue Router & Composition API) |
+| **Styling** | Tailwind CSS |
+| **Database** | Supabase & PostgreSQL |
+| **Build Tool** | Vite |
 
-State & Database: Supabase & PostgreSQL.
+---
 
-Styling: Tailwind CSS.
+## Author
+* Irfan Abdurrahman Student of Information Systems, Universitas Brawijaya
+* GitHub: @Erpan1945
+* LinkedIn: LinkedIn Irfan Abdurrahman
 
-Build Tool: Vite.
 
-Panduan Instalasi
-Clone Repository:
-
-Bash
-git clone https://github.com/Erpan1945/portfolio-web.git
-cd porto-web
-Backend Setup:
-
-Bash
-composer install
-cp .env.example .env
-php artisan key:generate
-Frontend Setup:
-
-Bash
-npm install
-npm run dev
-Database Migration:
-
-Bash
-php artisan migrate
-
-👤 Author
-Irfan Abdurrahman Student of Information Systems, Universitas Brawijaya.
-
-Interests: UI/UX Design, Mobile Development (Kotlin/Flutter), Web Development.
-
-LinkedIn: [Link LinkedIn Anda]
-
-GitHub: @Erpan1945
+---
