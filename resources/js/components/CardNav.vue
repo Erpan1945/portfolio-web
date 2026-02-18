@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { gsap } from 'gsap';
 import { nextTick, onBeforeUpdate, onMounted, onUnmounted, ref, watch, type VNodeRef } from 'vue';
+import { useRouter, useRoute } from 'vue-router'; // Import Router
 
-// --- Types ---
+// --- Tipe Data ---
 type CardNavLink = {
   label: string;
   href?: string;
@@ -28,7 +29,6 @@ export interface CardNavProps {
   buttonTextColor?: string;
 }
 
-// --- Props ---
 const props = withDefaults(defineProps<CardNavProps>(), {
   logoAlt: 'Logo',
   className: '',
@@ -42,11 +42,14 @@ const props = withDefaults(defineProps<CardNavProps>(), {
 // --- State ---
 const isHamburgerOpen = ref(false);
 const isExpanded = ref(false);
+const isDark = ref(false);
 const navRef = ref<HTMLDivElement | null>(null);
 const cardsRef = ref<HTMLDivElement[]>([]);
 const tlRef = ref<gsap.core.Timeline | null>(null);
 
-// --- Refs Management ---
+const router = useRouter(); // Init Router
+const route = useRoute();   // Init Route
+
 const setCardRef = (i: number): VNodeRef => (el) => {
   if (el && el instanceof HTMLDivElement) {
     cardsRef.value[i] = el;
@@ -57,23 +60,41 @@ onBeforeUpdate(() => {
   cardsRef.value = [];
 });
 
-// --- Logic Animasi ---
+// --- LOGIC SCROLL TO TOP ---
+const handleLogoClick = () => {
+  if (route.path === '/') {
+    // Jika sedang di Home, scroll ke atas dengan smooth
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  } else {
+    // Jika di halaman lain, pindah ke Home dulu
+    router.push('/');
+  }
+};
+
+// --- Logic Dark Mode ---
+const toggleTheme = () => {
+    isDark.value = !isDark.value;
+    if (isDark.value) {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+    }
+};
+
+// --- Logic GSAP (Animasi) ---
 const calculateHeight = () => {
   const navEl = navRef.value;
-  if (!navEl) return 60; // Default closed height
+  if (!navEl) return 60; 
 
-  // Logika Mobile vs Desktop
   const isMobile = window.matchMedia('(max-width: 768px)').matches;
-  
-  // Clone element secara virtual untuk kalkulasi tinggi jika perlu, 
-  // atau gunakan hardcoded logic sesuai desain card
   if (isMobile) {
-    // Estimasi tinggi untuk mobile: TopBar + (Jumlah Card * Tinggi Card) + Padding
-    // Angka 260 adalah estimasi aman, bisa disesuaikan dengan konten
     return 60 + (props.items.slice(0, 3).length * 100) + 20; 
   }
-  
-  // Tinggi desktop saat expanded
   return 260; 
 };
 
@@ -81,20 +102,17 @@ const createTimeline = () => {
   const navEl = navRef.value;
   if (!navEl) return null;
 
-  // Set initial states
   gsap.set(navEl, { height: 60, overflow: 'hidden' });
   gsap.set(cardsRef.value, { y: 50, opacity: 0 });
 
   const tl = gsap.timeline({ paused: true });
 
-  // Animasi Container membesar
   tl.to(navEl, {
     height: calculateHeight(),
     duration: 0.4,
     ease: props.ease
   });
 
-  // Animasi Cards muncul (stagger)
   tl.to(cardsRef.value, { 
     y: 0, 
     opacity: 1, 
@@ -111,41 +129,42 @@ const toggleMenu = () => {
   if (!tl) return;
 
   if (!isExpanded.value) {
-    // Open
     isHamburgerOpen.value = true;
     isExpanded.value = true;
-    // Recalculate height in case screen changed
     const newHeight = calculateHeight();
-    // Update timeline destination if needed (advanced usage), 
-    // for simplicity strictly re-playing works well for static content
     tl.play();
   } else {
-    // Close
     isHamburgerOpen.value = false;
     tl.reverse();
-    // Set expanded false after animation finishes
     tl.eventCallback('onReverseComplete', () => {
       isExpanded.value = false;
-      tl.eventCallback('onReverseComplete', null); // clear callback
+      tl.eventCallback('onReverseComplete', null); 
     });
   }
 };
 
 const handleResize = () => {
-  // Re-create timeline on resize to handle responsive height changes
   if (tlRef.value) tlRef.value.kill();
   tlRef.value = createTimeline();
   
-  // Jika sedang terbuka, paksa buka ulang timeline baru ke posisi akhir
   if (isExpanded.value && tlRef.value) {
     tlRef.value.progress(1);
   }
 };
 
-// --- Lifecycle ---
 onMounted(() => {
   tlRef.value = createTimeline();
   window.addEventListener('resize', handleResize);
+
+  const userPrefersDark = localStorage.theme === 'dark' || 
+        (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  if (userPrefersDark) {
+      isDark.value = true;
+      document.documentElement.classList.add('dark');
+  } else {
+      isDark.value = false;
+      document.documentElement.classList.remove('dark');
+  }
 });
 
 onUnmounted(() => {
@@ -163,46 +182,66 @@ watch(() => [props.ease, props.items], () => {
 </script>
 
 <template>
-  <div :class="`card-nav-container absolute left-1/2 -translate-x-1/2 w-[90%] max-w-[800px] z-[99] top-[1.2em] md:top-[2em] ${props.className}`">
+  <div :class="`card-nav-container fixed left-1/2 -translate-x-1/2 w-[90%] max-w-200 z-99 top-[1.2em] md:top-[2em] pointer-events-none ${props.className}`">
+    
     <nav
       ref="navRef"
       :class="[
-        'card-nav block h-[60px] p-0 rounded-xl shadow-lg relative overflow-hidden will-change-[height] border border-gray-100',
+        'card-nav block h-15 p-0 rounded-xl shadow-lg relative overflow-hidden will-change-[height] border border-gray-100 dark:border-gray-700 pointer-events-auto transition-colors duration-300',
         { open: isExpanded }
       ]"
-      :style="{ backgroundColor: props.baseColor }"
+      :style="{ backgroundColor: isDark ? '#1f2937' : props.baseColor }"
     >
-      <div class="card-nav-top top-0 z-[2] absolute inset-x-0 flex justify-between items-center px-4 h-[60px]">
+      <div class="card-nav-top top-0 z-2 absolute inset-x-0 flex justify-between items-center px-4 h-15">
         
         <div
           :class="[
-            'hamburger-menu group h-full flex flex-col items-center justify-center cursor-pointer gap-[6px] order-2 md:order-none',
+            'hamburger-menu group h-full flex flex-col items-center justify-center cursor-pointer gap-1.5 order-2 md:order-0',
             { open: isHamburgerOpen }
           ]"
           @click="toggleMenu"
           role="button"
           :aria-label="isExpanded ? 'Close menu' : 'Open menu'"
-          :style="{ color: props.menuColor }"
+          :style="{ color: isDark ? '#fff' : props.menuColor }"
         >
-          <div :class="['w-[24px] h-[2px] bg-current transition-all duration-300 origin-center', { 'translate-y-[4px] rotate-45': isHamburgerOpen }]" />
-          <div :class="['w-[24px] h-[2px] bg-current transition-all duration-300 origin-center', { '-translate-y-[4px] -rotate-45': isHamburgerOpen }]" />
+          <div :class="['w-6 h-0.5 bg-current transition-all duration-300 origin-center', { 'translate-y-1 rotate-45': isHamburgerOpen }]" />
+          <div :class="['w-6 h-0.5 bg-current transition-all duration-300 origin-center', { '-translate-y-1 -rotate-45': isHamburgerOpen }]" />
         </div>
 
-        <div class="md:absolute md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 flex items-center order-1 md:order-none">
-          <img :src="props.logo" :alt="props.logoAlt" class="h-[24px] w-auto object-contain" />
+        <div class="md:absolute md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 flex items-center order-1 md:order-0 cursor-pointer">
+            <a href="#" @click.prevent="handleLogoClick">
+                <img 
+                    :src="props.logo" 
+                    :alt="props.logoAlt" 
+                    class="h-6 w-auto object-contain transition-all duration-300"
+                    :style="{ filter: isDark ? 'invert(1)' : 'none' }"
+                />
+            </a>
         </div>
 
-        <button
-          type="button"
-          class="hidden md:inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-300"
-          :style="{ backgroundColor: props.buttonBgColor, color: props.buttonTextColor }"
-        >
-          Get Started
+        <div class="hidden md:flex items-center gap-3">
+            <button @click="toggleTheme" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition focus:outline-none">
+                 <svg v-if="isDark" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                 <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+            </button>
+            <router-link
+              to="/cv"
+              class="inline-flex items-center px-4 py-2 text-sm font-bold rounded-lg transition-colors duration-300 shadow-md"
+              :style="{ backgroundColor: isDark ? '#3b82f6' : props.buttonBgColor, color: props.buttonTextColor }"
+            >
+              View CV
+            </router-link>
+        </div>
+        
+        <button @click="toggleTheme" class="md:hidden p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition focus:outline-none order-3">
+             <svg v-if="isDark" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+             <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
         </button>
+
       </div>
 
       <div
-        class="absolute left-0 right-0 top-[60px] bottom-0 p-2 flex flex-col md:flex-row items-stretch md:items-end gap-2 z-[1]"
+        class="absolute left-0 right-0 top-15 bottom-0 p-2 flex flex-col md:flex-row items-stretch md:items-end gap-2 z-1"
         :class="isExpanded ? 'visible pointer-events-auto' : 'invisible pointer-events-none'"
         :aria-hidden="!isExpanded"
       >
@@ -210,7 +249,7 @@ watch(() => [props.ease, props.items], () => {
           v-for="(item, idx) in (props.items || []).slice(0, 3)"
           :key="`${item.label}-${idx}`"
           :ref="setCardRef(idx)"
-          class="relative flex flex-col flex-1 gap-2 p-4 rounded-lg min-h-[80px] md:h-full justify-between group cursor-default"
+          class="relative flex flex-col flex-1 gap-2 p-4 rounded-lg min-h-20 md:h-full justify-between group cursor-default shadow-sm"
           :style="{ backgroundColor: item.bgColor, color: item.textColor }"
         >
           <div class="font-medium text-lg md:text-xl tracking-tight">
@@ -218,18 +257,18 @@ watch(() => [props.ease, props.items], () => {
           </div>
           
           <div class="flex flex-col gap-1 mt-auto">
-            <a
+            <router-link
               v-for="(lnk, i) in item.links"
               :key="`${lnk.label}-${i}`"
               class="inline-flex items-center gap-1 opacity-80 hover:opacity-100 transition-opacity text-sm cursor-pointer hover:underline"
-              :href="lnk.href || '#'"
+              :to="lnk.href || '#'"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="7" y1="17" x2="17" y2="7"></line>
                 <polyline points="7 7 17 7 17 17"></polyline>
               </svg>
               {{ lnk.label }}
-            </a>
+            </router-link>
           </div>
         </div>
       </div>

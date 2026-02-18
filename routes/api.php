@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CvController;
+use App\Http\Controllers\CertificateController;
 
 // --- ROUTE PUBLIK (Bisa diakses tanpa login) ---
 
@@ -12,6 +13,7 @@ use App\Http\Controllers\CvController;
 Route::get('/cv', [CvController::class, 'index']); 
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/projects', [ProjectController::class, 'index']);
+Route::get('/certificates', [CertificateController::class, 'index']);
 
 
 // --- ROUTE RAHASIA (Harus Login) ---

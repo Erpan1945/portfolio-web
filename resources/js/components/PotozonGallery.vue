@@ -29,7 +29,7 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 md:gap-10">
         
         <div v-for="(card, index) in cards" :key="card.id"
-             class="relative rounded-[3rem] overflow-hidden aspect-[4/7] shadow-xl transition-transform hover:-translate-y-2 duration-300"
+             class="relative rounded-[3rem] overflow-hidden aspect-4/7 shadow-xl transition-transform hover:-translate-y-2 duration-300"
              :class="[
                 card.bgColor, // Kelas warna background dinamis
                 // Logika Zig-Zag: Jika index ganjil (1, 3), tambahkan margin atas besar
@@ -43,7 +43,7 @@
                     <img :src="card.img" alt="Gallery Image" 
                          class="w-full h-full object-cover transform rotate-6 scale-125 origin-center transition-transform duration-700 hover:scale-150">
                          
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
+                    <div class="absolute inset-0 bg-linear-to-t from-black/20 to-transparent pointer-events-none"></div>
                 </div>
              </div>
 
