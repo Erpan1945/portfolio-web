@@ -9,6 +9,10 @@
                 <button @click="activeTab = 'certificates'" :class="{'bg-purple-600 text-white shadow-lg': activeTab === 'certificates', 'text-gray-400 hover:text-white hover:bg-gray-800': activeTab !== 'certificates'}" class="w-full text-left px-4 py-3 rounded-xl font-bold transition flex items-center gap-3">
                     🏆 Certificates
                 </button>
+                <button @click="activeTab = 'settings'" :class="{'bg-purple-600 text-white shadow-lg': activeTab === 'settings', 'text-gray-400 hover:text-white hover:bg-gray-800': activeTab !== 'settings'}" class="w-full text-left px-4 py-3 rounded-xl font-bold transition flex items-center gap-3">
+                    ⚙️ Settings
+                </button>
+                
                 <div class="pt-8 mt-8 border-t border-gray-800">
                     <button @click="handleLogout" class="w-full text-left px-4 py-3 rounded-xl text-red-400 hover:bg-red-900/20 font-bold transition flex items-center gap-3">
                         🚪 Log Out
@@ -169,6 +173,29 @@
                 </div>
             </div>
 
+            <div v-if="activeTab === 'settings'" class="max-w-6xl mx-auto">
+                <h2 class="text-3xl font-bold mb-8 text-gray-800 flex justify-between items-center">
+                    Pengaturan Website
+                </h2>
+
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-200 mb-10 transition-all hover:shadow-md">
+                    <h3 class="text-xl font-bold mb-6 text-gray-700 border-b pb-4">Update Foto "About Me"</h3>
+                    
+                    <form @submit.prevent="submitPhoto" class="space-y-4 max-w-lg">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Foto Baru (Max 2MB)</label>
+                            <input type="file" @change="handleFileChange" accept="image/jpeg, image/png, image/webp"
+                                class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition">
+                        </div>
+                        
+                        <button type="submit" :disabled="isUploading"
+                                class="px-6 py-3 mt-4 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold transition shadow-lg hover:-translate-y-1 disabled:opacity-50">
+                            {{ isUploading ? 'Mengupload...' : 'Simpan Foto Baru' }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+
         </main>
     </div>
 </template>
@@ -186,9 +213,50 @@ const projects = ref([]);
 const isEditing = ref(false);
 const editId = ref(null);
 
+// --- LOGIKA UNTUK FITUR UPLOAD FOTO ---
+const photoFile = ref(null);
+const isUploading = ref(false);
+
+const handleFileChange = (event) => {
+    photoFile.value = event.target.files[0];
+};
+
+const submitPhoto = async () => {
+    if (!photoFile.value) {
+        alert("Pilih foto terlebih dahulu!");
+        return;
+    }
+
+    isUploading.value = true;
+    
+    const formData = new FormData();
+    formData.append('photo', photoFile.value);
+
+    try {
+        const token = localStorage.getItem('token'); 
+
+        const response = await axios.post('/api/settings/photo', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                'Authorization': `Bearer ${token}` 
+            }
+        });
+
+        alert("Berhasil! " + response.data.message);
+        photoFile.value = null; // Reset input file
+        
+    } catch (error) {
+        console.error("Gagal upload:", error);
+        alert("Gagal mengupload foto. Pastikan ukuran di bawah 2MB.");
+    } finally {
+        isUploading.value = false;
+    }
+};
+
 const form = ref({
     title: '', description: '', tech_stack: '', link: '', image: null, existingImage: ''
 });
+
 
 // SAFETY CHECK: Pastikan data project selalu array
 const loadProjects = async () => {

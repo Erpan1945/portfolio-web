@@ -1,11 +1,45 @@
 <script setup>
+import { ref } from 'vue';
+import axios from 'axios';
 import CardNav from '../CardNav.vue';
 
-const navItems = [ /* Copy navItems yang sama persis */
+const navItems = [ 
   { label: "Home", bgColor: "#0D0716", textColor: "#fff", links: [{ label: "Intro", href: "/" }, { label: "About Me", href: "/#about" }] },
   { label: "Portfolio", bgColor: "#5B21B6", textColor: "#fff", links: [{ label: "Projects", href: "/portfolio" }, { label: "Certificates", href: "/portfolio" }] },
-  { label: "Contact", bgColor: "#0F172A", textColor: "#fff", links: [{ label: "Contact Form", href: "#" }, { label: "Email Me", href: "mailto:email@example.com" }] }
+  { label: "Contact", bgColor: "#0F172A", textColor: "#fff", links: [{ label: "Contact Form", href: "#" }, { label: "Email Me", href: "mailto:irfan2904.ia@gmail.com" }] }
 ];
+
+// Siapkan variabel reaktif untuk menampung inputan user
+const form = ref({
+    name: '',
+    email: '',
+    message: ''
+});
+
+const isSubmitting = ref(false);
+const successMessage = ref('');
+
+// Fungsi untuk mengirim data
+const submitForm = async () => {
+    isSubmitting.value = true;
+    successMessage.value = '';
+
+    try {
+        const response = await axios.post('/api/contact', form.value);
+        
+        // Tampilkan pesan sukses dan kosongkan form
+        successMessage.value = response.data.message;
+        form.value = { name: '', email: '', message: '' };
+        
+        // Hilangkan pesan sukses setelah 5 detik
+        setTimeout(() => { successMessage.value = ''; }, 5000);
+    } catch (error) {
+        console.error("Gagal mengirim pesan:", error);
+        alert("Terjadi kesalahan saat mengirim pesan. Silakan coba lagi.");
+    } finally {
+        isSubmitting.value = false;
+    }
+};
 </script>
 
 <template>
@@ -20,32 +54,37 @@ const navItems = [ /* Copy navItems yang sama persis */
                 Punya ide menarik atau ingin membangun sesuatu yang hebat? Kirimkan pesan di bawah ini atau email saya langsung.
             </p>
 
-            <form class="space-y-6">
+            <div v-if="successMessage" class="mb-6 p-4 bg-green-100 text-green-800 rounded-xl font-bold border border-green-200">
+                ✅ {{ successMessage }}
+            </div>
+
+            <form @submit.prevent="submitForm" class="space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="space-y-2">
                         <label class="font-bold text-sm uppercase tracking-wide text-gray-500">Nama</label>
-                        <input type="text" class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-xl p-4 focus:ring-2 focus:ring-purple-600 outline-none transition" placeholder="John Doe">
+                        <input v-model="form.name" type="text" required class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-xl p-4 focus:ring-2 focus:ring-purple-600 outline-none transition" placeholder="John Doe">
                     </div>
                     <div class="space-y-2">
                         <label class="font-bold text-sm uppercase tracking-wide text-gray-500">Email</label>
-                        <input type="email" class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-xl p-4 focus:ring-2 focus:ring-purple-600 outline-none transition" placeholder="john@example.com">
+                        <input v-model="form.email" type="email" required class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-xl p-4 focus:ring-2 focus:ring-purple-600 outline-none transition" placeholder="john@example.com">
                     </div>
                 </div>
                 <div class="space-y-2">
                     <label class="font-bold text-sm uppercase tracking-wide text-gray-500">Pesan</label>
-                    <textarea rows="6" class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-xl p-4 focus:ring-2 focus:ring-purple-600 outline-none transition" placeholder="Ceritakan projectmu..."></textarea>
+                    <textarea v-model="form.message" rows="6" required class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-xl p-4 focus:ring-2 focus:ring-purple-600 outline-none transition" placeholder="Ceritakan projectmu..."></textarea>
                 </div>
-                <button type="button" class="w-full md:w-auto px-10 py-4 bg-black dark:bg-white text-white dark:text-black font-bold rounded-full text-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition shadow-xl">
-                    Kirim Pesan 🚀
+                
+                <button type="submit" :disabled="isSubmitting" class="w-full md:w-auto px-10 py-4 bg-black dark:bg-white text-white dark:text-black font-bold rounded-full text-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition shadow-xl disabled:opacity-50">
+                    {{ isSubmitting ? 'Mengirim...' : 'Kirim Pesan 🚀' }}
                 </button>
             </form>
 
             <div class="mt-16 pt-16 border-t border-gray-200 dark:border-gray-800 flex flex-col md:flex-row justify-between text-gray-500 gap-4">
                 <p>© 2026 Creative Developer.</p>
                 <div class="flex gap-6">
-                    <a href="#" class="hover:text-black dark:hover:text-white transition">LinkedIn</a>
-                    <a href="#" class="hover:text-black dark:hover:text-white transition">GitHub</a>
-                    <a href="#" class="hover:text-black dark:hover:text-white transition">Instagram</a>
+                    <a href="https://www.linkedin.com/in/erpan1945/" target="_blank" rel="noopener noreferrer" class="hover:text-purple-600 transition font-bold">LinkedIn</a>
+                    <a href="https://github.com/Erpan1945" target="_blank" rel="noopener noreferrer" class="hover:text-purple-600 transition font-bold">GitHub</a>
+                    <a href="https://www.instagram.com/yrpan29" target="_blank" rel="noopener noreferrer" class="hover:text-purple-600 transition font-bold">Instagram</a>
                 </div>
             </div>
         </section>
