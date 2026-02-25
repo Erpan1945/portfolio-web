@@ -4,17 +4,6 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 
-// HAPUS atau KOMENTARI route default lama:
-// Route::get('/', function () {
-//     return view('welcome');
-// });
-
-// CATCH-ALL ROUTE - HARUS PALING AKHIR!
-// Jangan tangkap /api/* routes - gunakan negative lookahead
-Route::get('/{any}', function () {
-    return view('welcome');
-})->where('any', '^(?!api/).*');
-
 // Route untuk menjalankan migrasi di Vercel
 Route::get('/deploy/migrate/{secret}', function ($secret) {
     // Validasi kunci rahasia agar tidak sembarang orang bisa mereset DB Anda
@@ -40,4 +29,10 @@ Route::get('/deploy/migrate/{secret}', function ($secret) {
             'message' => $e->getMessage()
         ], 500);
     }
+});
+
+// CATCH-ALL ROUTE UNTUK SPA - HARUS PALING AKHIR!
+// Tangkap semua request yang bukan static files
+Route::fallback(function () {
+    return view('welcome');
 });
