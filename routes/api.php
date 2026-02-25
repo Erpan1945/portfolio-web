@@ -7,11 +7,9 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CvController;
 use App\Http\Controllers\CertificateController;
 
-// --- ROUTE PUBLIK (Bisa diakses tanpa login) ---
-
-// Perbaikan: Gunakan ::class bukan .class
-Route::get('/cv', [CvController::class, 'index']); 
+// --- PUBLIC ROUTES (tanpa perlu token) ---
 Route::post('/login', [AuthController::class, 'login']);
+Route::get('/cv', [CvController::class, 'index']); 
 Route::get('/projects', [ProjectController::class, 'index']);
 Route::get('/certificates', [CertificateController::class, 'index']);
 

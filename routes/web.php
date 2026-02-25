@@ -9,11 +9,11 @@ use Illuminate\Support\Facades\Config;
 //     return view('welcome');
 // });
 
-// GANTI DENGAN INI (Catch-All Route):
-// Artinya: "Tangkap SEMUA request ({any}) dan kembalikan ke view 'welcome'"
+// CATCH-ALL ROUTE - HARUS PALING AKHIR!
+// Jangan tangkap /api/* routes - gunakan negative lookahead
 Route::get('/{any}', function () {
     return view('welcome');
-})->where('any', '.*');
+})->where('any', '^(?!api/).*');
 
 // Route untuk menjalankan migrasi di Vercel
 Route::get('/deploy/migrate/{secret}', function ($secret) {
