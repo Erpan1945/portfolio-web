@@ -16,27 +16,45 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/projects', [ProjectController::class, 'index']);
 Route::get('/certificates', [CertificateController::class, 'index']);
 
-// GANTI BAGIAN INI:
 Route::post('/send-message', function (Request $request) {
-    // 1. Gunakan Validator manual, JANGAN gunakan $request->validate()
-    $validator = Validator::make($request->all(), [
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|max:255',
-        'message' => 'required|string',
-    ]);
+    try {
+        // 1. Parse request body
+        $data = $request->all();
+        
+        if (empty($data)) {
+            $data = json_decode(file_get_contents('php://input'), true) ?? [];
+        }
 
-    // 2. Jika validasi gagal, paksa Laravel merespons dengan JSON (mencegah redirect 405)
-    if ($validator->fails()) {
+        // 2. Gunakan Validator manual
+        $validator = Validator::make($data, [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'message' => 'required|string',
+        ]);
+
+        // 3. Jika validasi gagal, respond dengan JSON
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal', 
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // 4. Simpan contact message
+        Contact::create($validator->validated());
+
         return response()->json([
-            'message' => 'Validasi gagal', 
-            'errors' => $validator->errors()
-        ], 422);
+            'success' => true,
+            'message' => 'Pesan berhasil dikirim!'
+        ], 201);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+        ], 500);
     }
-
-    // 3. Simpan jika berhasil
-    Contact::create($validator->validated());
-
-    return response()->json(['message' => 'Pesan berhasil dikirim!']);
 });
 
 Route::get('/settings/photo', [SettingController::class, 'getPhoto']);

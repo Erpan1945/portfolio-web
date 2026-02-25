@@ -4,25 +4,27 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// PENTING: Handle CORS dan OPTIONS requests
+// ===== CRITICAL: CORS & PREFLIGHT HANDLING =====
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD');
-header('Access-Control-Allow-Headers: Content-Type, Accept, Authorization, X-Requested-With');
-header('Access-Control-Max-Age: 3600');
+header('Access-Control-Allow-Headers: Content-Type, Accept, Authorization, X-Requested-With, X-CSRF-Token');
+header('Access-Control-Max-Age: 86400');
+header('Access-Control-Expose-Headers: Content-Length, X-JSON-Response-Count');
 
-// Handle preflight requests
+// Handle OPTIONS (preflight request)
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
+    header('Content-Length: 0');
     exit();
 }
 
-// Set content-type JSON untuk API responses
-if (strpos($_SERVER['REQUEST_URI'], '/api/') === 0) {
-    header('Content-Type: application/json');
-}
+// Set default content-type
+header('Content-Type: application/json; charset=utf-8');
+
+// Log request untuk debugging
+error_log("API Request: {$_SERVER['REQUEST_METHOD']} {$_SERVER['REQUEST_URI']}", 0);
 
 // 1. KEMBALIKAN CACHE INTI, TAPI JANGAN CACHE ROUTES!
-// (Ini memastikan Laravel bisa booting, tapi rute selalu terbaca yang terbaru)
 $tmpSettings = [
     'APP_SERVICES_CACHE' => '/tmp/services.php',
     'APP_PACKAGES_CACHE' => '/tmp/packages.php',
@@ -36,7 +38,7 @@ foreach ($tmpSettings as $key => $value) {
     $_SERVER[$key] = $value;
 }
 
-// 2. BUAT STRUKTUR FOLDER SEMENTARA DI MEMORI VERCEL
+// 2. BUAT STRUKTUR FOLDER SEMENTARA
 $tmpDirs = [
     '/tmp/storage/framework/views',
     '/tmp/storage/framework/cache/data',
@@ -47,7 +49,7 @@ $tmpDirs = [
 
 foreach ($tmpDirs as $dir) {
     if (!is_dir($dir)) {
-        mkdir($dir, 0755, true);
+        @mkdir($dir, 0755, true);
     }
 }
 
@@ -56,12 +58,12 @@ try {
     require __DIR__ . '/../public/index.php';
 } catch (\Throwable $e) {
     http_response_code(500);
-    header('Content-Type: application/json');
     echo json_encode([
         'error' => 'Laravel Bootstrap Error',
         'message' => $e->getMessage(),
         'file' => $e->getFile(),
-        'line' => $e->getLine()
-    ]);
+        'line' => $e->getLine(),
+        'trace' => explode("\n", $e->getTraceAsString())
+    ], JSON_PRETTY_PRINT);
     exit();
 }

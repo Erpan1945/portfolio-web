@@ -10,30 +10,57 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        // Validasi input
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
+        try {
+            // Parse JSON body jika ada
+            $data = $request->all();
+            if (empty($data)) {
+                $data = json_decode(file_get_contents('php://input'), true) ?? [];
+            }
 
-        // Coba login
-        if (Auth::attempt($credentials)) {
-            
-            /** @var \App\Models\User $user */
-            // Baris di atas memberitahu VS Code bahwa $user adalah Model User kita
-            $user = Auth::user(); 
+            // Validasi input dengan manual validator
+            $validator = \Illuminate\Support\Facades\Validator::make($data, [
+                'email' => ['required', 'email'],
+                'password' => ['required'],
+            ]);
 
-            // Buat token rahasia untuk sesi login
-            $token = $user->createToken('admin-token')->plainTextToken;
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validasi gagal',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $credentials = $validator->validated();
+
+            // Coba login
+            if (Auth::attempt($credentials)) {
+                
+                /** @var \App\Models\User $user */
+                $user = Auth::user(); 
+
+                // Buat token rahasia untuk sesi login
+                $token = $user->createToken('admin-token')->plainTextToken;
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Login berhasil!',
+                    'token' => $token,
+                    'user' => $user
+                ], 200);
+            }
 
             return response()->json([
-                'message' => 'Login berhasil!',
-                'token' => $token,
-                'user' => $user
-            ]);
+                'success' => false,
+                'message' => 'Email atau password salah.'
+            ], 401);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
         }
-
-        return response()->json(['message' => 'Email atau password salah.'], 401);
     }
 
     public function logout(Request $request)
