@@ -96,6 +96,18 @@ if (isset($_SERVER['VERCEL'])) {
     }
 }
 
+// SIMPLE TEST ENDPOINT (tanpa perlu Laravel)
+if ($_SERVER['REQUEST_URI'] === '/api/health' || $_SERVER['REQUEST_URI'] === '/health') {
+    http_response_code(200);
+    echo json_encode([
+        'status' => 'ok',
+        'request_method' => $_SERVER['REQUEST_METHOD'],
+        'request_uri' => $_SERVER['REQUEST_URI'],
+        'timestamp' => date('Y-m-d H:i:s')
+    ]);
+    exit();
+}
+
 // 3. JALANKAN LARAVEL
 try {
     require __DIR__ . '/../public/index.php';
