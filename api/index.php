@@ -94,7 +94,7 @@ foreach ($tmpDirs as $dir) {
 
 // CLEAR ROUTE CACHE FILES DI VERCEL (penting!)
 // Routes perlu di-re-compile setiap deployment, jangan cache
-if (isset($_SERVER['VERCEL']) || env('VERCEL') == '1') {
+if (isset($_SERVER['VERCEL'])) {
     $cachePaths = [
         __DIR__ . '/../bootstrap/cache',
         '/tmp/bootstrap/cache',
