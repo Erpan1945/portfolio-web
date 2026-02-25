@@ -163,7 +163,7 @@ onMounted(() => {
                         
                         <div class="space-y-4 text-lg md:text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
                             <p>
-                                Halo! Perkenalkan, saya <strong class="text-gray-900 dark:text-white">Erpan</strong>, seorang mahasiswa program studi <strong class="text-blue-600 dark:text-blue-400">Sistem Informasi</strong> di <strong class="text-blue-600 dark:text-blue-400">Fakultas Ilmu Komputer</strong>. Saya adalah seorang developer yang bersemangat mengubah baris kode menjadi solusi nyata. Saya percaya bahwa website bukan hanya sekedar tampilan, melainkan sebuah <strong class="text-gray-900 dark:text-white">pengalaman digital</strong>.
+                                Halo! Perkenalkan, saya <strong class="text-gray-900 dark:text-white">Erpan</strong>, seorang mahasiswa program studi <strong class="text-blue-600 dark:text-blue-400">Sistem Informasi</strong> di <strong class="text-blue-600 dark:text-blue-400">Fakultas Ilmu Komputer Universitas Brawijaya</strong>. Saya adalah seorang developer yang bersemangat mengubah baris kode menjadi solusi nyata. Saya percaya bahwa website bukan hanya sekedar tampilan, melainkan sebuah <strong class="text-gray-900 dark:text-white">pengalaman digital</strong>.
                             </p>
                             <p>
                                 Dengan latar belakang kuat di <strong class="text-purple-600 dark:text-purple-400">Laravel</strong> dan <strong class="text-green-600 dark:text-green-400">Vue.js</strong>, saya terbiasa menangani proyek dari arsitektur database hingga antarmuka pengguna yang interaktif dan responsif.
