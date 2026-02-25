@@ -163,7 +163,7 @@ onMounted(() => {
                         
                         <div class="space-y-4 text-lg md:text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
                             <p>
-                                Halo! Saya adalah seorang developer yang bersemangat mengubah baris kode menjadi solusi nyata. Saya percaya bahwa website bukan hanya sekedar tampilan, melainkan sebuah <strong class="text-gray-900 dark:text-white">pengalaman digital</strong>.
+                                Halo! Perkenalkan, saya <strong class="text-gray-900 dark:text-white">Erpan</strong>, seorang mahasiswa program studi <strong class="text-blue-600 dark:text-blue-400">Sistem Informasi</strong> di <strong class="text-blue-600 dark:text-blue-400">Fakultas Ilmu Komputer</strong>. Saya adalah seorang developer yang bersemangat mengubah baris kode menjadi solusi nyata. Saya percaya bahwa website bukan hanya sekedar tampilan, melainkan sebuah <strong class="text-gray-900 dark:text-white">pengalaman digital</strong>.
                             </p>
                             <p>
                                 Dengan latar belakang kuat di <strong class="text-purple-600 dark:text-purple-400">Laravel</strong> dan <strong class="text-green-600 dark:text-green-400">Vue.js</strong>, saya terbiasa menangani proyek dari arsitektur database hingga antarmuka pengguna yang interaktif dan responsif.
@@ -173,11 +173,13 @@ onMounted(() => {
                         <div class="pt-8">
                             <h3 class="text-sm font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-6 border-b border-gray-200 dark:border-gray-700 pb-2 inline-block">Tech Stack & Tools</h3>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                <div v-for="skill in ['Laravel', 'Vue.js', 'Tailwind', 'MySQL', 'Git', 'Inertia', 'JavaScript', 'Figma']" :key="skill" 
-                                     class="flex items-center gap-3 p-3 bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 hover:-translate-y-1 transition-transform">
+                                <div v-for="skill in ['Laravel', 'Vue.js', 'Tailwind', 'MySQL', 'PostgreSQL', 'Git', 'Inertia', 'JavaScript', 'Figma']" :key="skill" 
+                                    class="flex items-center gap-3 p-3 bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 hover:-translate-y-1 transition-transform">
+                                    
                                     <div class="w-2 h-2 rounded-full" 
-                                         :class="skill === 'Laravel' ? 'bg-red-500' : skill === 'Vue.js' ? 'bg-green-500' : 'bg-blue-500'"></div>
+                                        :class="skill === 'Laravel' ? 'bg-red-500' : skill === 'Vue.js' ? 'bg-green-500' : 'bg-blue-500'"></div>
                                     <span class="font-bold text-sm text-gray-800 dark:text-white">{{ skill }}</span>
+                                    
                                 </div>
                             </div>
                         </div>
