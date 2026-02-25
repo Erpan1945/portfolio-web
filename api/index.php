@@ -5,9 +5,18 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 // ===== VERCEL-SPECIFIC: FIX REQUEST_URI & REQUEST_METHOD =====
-if (!isset($_SERVER['REQUEST_METHOD'])) {
-    $_SERVER['REQUEST_METHOD'] = 'GET';
+// JANGAN set default REQUEST_METHOD ke GET! Parse dari berbagai source
+if (!isset($_SERVER['REQUEST_METHOD']) || empty($_SERVER['REQUEST_METHOD'])) {
+    // Try: X-HTTP-Method header
+    $_SERVER['REQUEST_METHOD'] = $_SERVER['HTTP_X_HTTP_METHOD'] ?? 
+                                 $_SERVER['HTTP_X_METHOD'] ?? 
+                                 $_SERVER['REQUEST_METHOD'] ?? 
+                                 'GET';
 }
+
+error_log("DEBUG REQUEST_METHOD sources: X-HTTP-Method=" . ($_SERVER['HTTP_X_HTTP_METHOD'] ?? 'null') . 
+          " | REQUEST_METHOD=" . $_SERVER['REQUEST_METHOD'] . 
+          " | HTTP_REQUEST_METHOD=" . ($_SERVER['HTTP_REQUEST_METHOD'] ?? 'null'), 0);
 
 // Di Vercel, REQUEST_URI mungkin tidak diset dengan benar
 // Ambil dari VERCEL_URL atau reconstruct dari path
