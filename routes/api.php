@@ -1,5 +1,8 @@
 <?php
 
+exec('php ../artisan route:clear');
+exec('php ../artisan config:clear');
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProjectController;
