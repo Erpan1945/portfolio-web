@@ -4,6 +4,23 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+// PENTING: Handle CORS dan OPTIONS requests
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD');
+header('Access-Control-Allow-Headers: Content-Type, Accept, Authorization, X-Requested-With');
+header('Access-Control-Max-Age: 3600');
+
+// Handle preflight requests
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+
+// Set content-type JSON untuk API responses
+if (strpos($_SERVER['REQUEST_URI'], '/api/') === 0) {
+    header('Content-Type: application/json');
+}
+
 // 1. KEMBALIKAN CACHE INTI, TAPI JANGAN CACHE ROUTES!
 // (Ini memastikan Laravel bisa booting, tapi rute selalu terbaca yang terbaru)
 $tmpSettings = [
@@ -38,13 +55,13 @@ foreach ($tmpDirs as $dir) {
 try {
     require __DIR__ . '/../public/index.php';
 } catch (\Throwable $e) {
-    echo "<div style='font-family: sans-serif; padding: 20px; background: #ffebee; color: #c62828; border-radius: 8px;'>";
-    echo "<h1>🚨 Fatal Boot Error Terdeteksi</h1>";
-    echo "<h2>Pesan Error:</h2>";
-    echo "<p><strong>" . $e->getMessage() . "</strong></p>";
-    echo "<h2>Lokasi File:</h2>";
-    echo "<p>" . $e->getFile() . " pada baris " . $e->getLine() . "</p>";
-    echo "<h2>Detail Trace:</h2>";
-    echo "<pre style='background: #fff; padding: 15px; overflow-x: auto; border: 1px solid #ef9a9a;'>" . $e->getTraceAsString() . "</pre>";
-    echo "</div>";
+    http_response_code(500);
+    header('Content-Type: application/json');
+    echo json_encode([
+        'error' => 'Laravel Bootstrap Error',
+        'message' => $e->getMessage(),
+        'file' => $e->getFile(),
+        'line' => $e->getLine()
+    ]);
+    exit();
 }

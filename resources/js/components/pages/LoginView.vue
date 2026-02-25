@@ -34,14 +34,26 @@ const errorMessage = ref('');
 
 const handleLogin = async () => {
     try {
-        const response = await axios.post('/api/login', form.value);
+        const response = await axios.post('/api/login', form.value, {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        });
         localStorage.setItem('token', response.data.token);
         
         // router.push('/admin');
         router.push('/letmecook');
         
     } catch (error) {
-        errorMessage.value = "Login gagal! Periksa email/password.";
+        if (error.response?.status === 405) {
+            errorMessage.value = "Error 405: Server tidak dapat memproses request. Coba refresh halaman.";
+        } else if (error.response?.status === 422) {
+            errorMessage.value = "Login gagal! Periksa email/password.";
+        } else {
+            errorMessage.value = "Login gagal! Periksa email/password.";
+        }
+        console.error("Login error:", error);
     }
 };
 </script>
