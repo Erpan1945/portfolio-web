@@ -6,21 +6,23 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CvController;
 use App\Http\Controllers\CertificateController;
+use App\Http\Controllers\SettingController; // <-- Jangan lupa tambahkan ini
 
 // --- ROUTE PUBLIK (Bisa diakses tanpa login) ---
 
-// Perbaikan: Gunakan ::class bukan .class
 Route::get('/cv', [CvController::class, 'index']); 
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/projects', [ProjectController::class, 'index']);
 Route::get('/certificates', [CertificateController::class, 'index']);
+
+// Endpoint untuk mengambil URL foto profil/landing page
+Route::get('/settings/photo', [SettingController::class, 'getPhoto']);
 
 
 // --- ROUTE RAHASIA (Harus Login) ---
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     
-    // Perbaikan: Gunakan ::class di sini juga
     Route::post('/cv', [CvController::class, 'store']);
     Route::delete('/cv/{id}', [CvController::class, 'destroy']);
     
@@ -28,6 +30,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/projects', [ProjectController::class, 'store']);
     Route::post('/projects/{id}', [ProjectController::class, 'update']);
     Route::delete('/projects/{id}', [ProjectController::class, 'destroy']);
+    
+    // Endpoint untuk MENGUBAH foto (Hanya Admin)
+    Route::post('/settings/photo', [SettingController::class, 'updatePhoto']);
 });
 
 
