@@ -1,0 +1,3 @@
+- name: Run Database Migrations
+  run: |
+    curl -X GET https://porto-erpan.vercel.app/deploy/migrate/${{ secrets.MIGRATE_SECRET }}
