@@ -18,21 +18,20 @@ $app = Application::configure(basePath: dirname(__DIR__))
         //
     })->create();
 
-// LOGIKA VERCEL
-if (env('VERCEL') == '1') {
-    // Tentukan folder storage di /tmp
+// LOGIKA VERCEL (Agresif)
+if (isset($_SERVER['VERCEL']) || env('VERCEL') == '1') {
     $app->useStoragePath('/tmp/storage');
     
-    // Buat subfolder yang dibutuhkan Laravel untuk menyimpan cache views
-    $storageFolders = [
+    $paths = [
         '/tmp/storage/framework/views',
         '/tmp/storage/framework/cache',
         '/tmp/storage/framework/sessions',
+        '/tmp/storage/logs',
     ];
 
-    foreach ($storageFolders as $folder) {
-        if (!is_dir($folder)) {
-            mkdir($folder, 0755, true);
+    foreach ($paths as $path) {
+        if (!is_dir($path)) {
+            mkdir($path, 0755, true);
         }
     }
 }
