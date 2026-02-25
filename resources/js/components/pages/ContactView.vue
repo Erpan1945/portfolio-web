@@ -22,21 +22,20 @@ const successMessage = ref('');
 // Fungsi untuk mengirim data
 const submitForm = async () => {
     isSubmitting.value = true;
-    
+    successMessage.value = '';
+
     try {
-        // Menggunakan Web3Forms (Langsung ke email, bypass Vercel/Laravel backend)
-        const response = await axios.post('https://api.web3forms.com/submit', {
-            access_key: "MASUKKAN_ACCESS_KEY_GRATIS_DISINI", // Dapatkan dari web3forms.com
-            name: form.value.name,
-            email: form.value.email,
-            message: form.value.message
-        });
+        const response = await axios.post('/api/send-message', form.value);
         
-        successMessage.value = "Pesan berhasil meluncur ke email saya! 🚀";
+        // Tampilkan pesan sukses dan kosongkan form
+        successMessage.value = response.data.message;
         form.value = { name: '', email: '', message: '' };
         
+        // Hilangkan pesan sukses setelah 5 detik
+        setTimeout(() => { successMessage.value = ''; }, 5000);
     } catch (error) {
-        alert("Gagal mengirim pesan.");
+        console.error("Gagal mengirim pesan:", error);
+        alert("Terjadi kesalahan saat mengirim pesan. Silakan coba lagi.");
     } finally {
         isSubmitting.value = false;
     }
