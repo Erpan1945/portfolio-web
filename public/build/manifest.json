@@ -9,13 +9,13 @@
     ]
   },
   "resources/js/app.js": {
-    "file": "assets/app--3YoklZ3.js",
+    "file": "assets/app-3rBH38Ni.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
     "css": [
-      "assets/app-Bvgr1HuK.css",
-      "assets/app-6p317y4f.css"
+      "assets/app-CuBiTVY3.css",
+      "assets/app-shOppBJx.css"
     ]
   }
 }

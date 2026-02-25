@@ -36,22 +36,6 @@ const navItems = [
   }
 ];
 
-const profilePhoto = ref('/images/default-profile.png'); 
-
-onMounted(async () => {
-    try {
-        // 2. Ambil data dari API
-        const response = await axios.get('/api/settings/photo');
-        
-        // 3. Jika URL foto ada di database, timpa foto default
-        if (response.data.photo_url) {
-            profilePhoto.value = response.data.photo_url;
-        }
-    } catch (error) {
-        console.error("Gagal memuat foto profil:", error);
-    }
-});
-
 // --- 2. LOGIC HALAMAN ---
 const projects = ref([]);
 const loading = ref(true);
@@ -169,7 +153,7 @@ onMounted(() => {
                 <div class="flex flex-col md:flex-row gap-16 items-start">
                     <div class="w-full md:w-1/3 relative group">
                         <div class="absolute inset-0 bg-purple-600 rounded-4xl transform rotate-3 transition-transform group-hover:rotate-6"></div>
-                        <img :src="profilePhoto" alt="About Erpan" class="relative rounded-4xl shadow-xl w-full object-cover aspect-3/4 grayscale group-hover:grayscale-0 transition duration-500 border-4 border-white dark:border-gray-900">
+                        <img src="https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=600&q=80" alt="About Me" class="relative rounded-4xl shadow-xl w-full object-cover aspect-3/4 grayscale group-hover:grayscale-0 transition duration-500 border-4 border-white dark:border-gray-900">
                     </div>
                     
                     <div class="w-full md:w-2/3 space-y-8">
