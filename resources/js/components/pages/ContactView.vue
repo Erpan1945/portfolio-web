@@ -41,7 +41,7 @@ const navItems = [ /* Copy navItems yang sama persis */
             </form>
 
             <div class="mt-16 pt-16 border-t border-gray-200 dark:border-gray-800 flex flex-col md:flex-row justify-between text-gray-500 gap-4">
-                <p>© 2024 Creative Developer.</p>
+                <p>© 2026 Creative Developer.</p>
                 <div class="flex gap-6">
                     <a href="#" class="hover:text-black dark:hover:text-white transition">LinkedIn</a>
                     <a href="#" class="hover:text-black dark:hover:text-white transition">GitHub</a>
