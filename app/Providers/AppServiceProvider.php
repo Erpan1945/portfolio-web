@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\URL; // <-- Tambahkan baris ini
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +20,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Paksa Laravel menggunakan HTTPS saat berjalan di Vercel (production)
+        if (isset($_SERVER['VERCEL']) || env('VERCEL') == '1' || config('app.env') !== 'local') {
+            URL::forceScheme('https');
+        }
     }
 }
