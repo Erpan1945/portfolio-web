@@ -14,6 +14,12 @@ $app = Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         // PENTING: Tambahkan CORS middleware
         $middleware->statefulApi();
+        
+        // Exclude public API routes dari CSRF protection
+        $middleware->validateCsrfTokens(except: [
+            'api/send-message',
+            'api/login',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
