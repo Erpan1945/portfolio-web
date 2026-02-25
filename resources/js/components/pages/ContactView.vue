@@ -25,21 +25,30 @@ const submitForm = async () => {
     successMessage.value = '';
 
     try {
-        const response = await axios.post('/api/send-message', form.value);
+        // GANTI BAGIAN INI: Tambahkan headers khusus
+        const response = await axios.post('/api/send-message', form.value, {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        });
         
-        // Tampilkan pesan sukses dan kosongkan form
         successMessage.value = response.data.message;
         form.value = { name: '', email: '', message: '' };
         
-        // Hilangkan pesan sukses setelah 5 detik
         setTimeout(() => { successMessage.value = ''; }, 5000);
     } catch (error) {
         console.error("Gagal mengirim pesan:", error);
-        alert("Terjadi kesalahan saat mengirim pesan. Silakan coba lagi.");
+        if (error.response && error.response.status === 422) {
+             alert("Gagal: Mohon periksa kembali form Anda.");
+        } else {
+             alert("Terjadi kesalahan saat mengirim pesan. Silakan coba lagi.");
+        }
     } finally {
         isSubmitting.value = false;
     }
 };
+
 </script>
 
 <template>
