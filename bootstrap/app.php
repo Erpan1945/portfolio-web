@@ -25,13 +25,9 @@ $app = Application::configure(basePath: dirname(__DIR__))
         //
     })->create();
 
-// LOGIKA VERCEL (Agresif) - DISABLE ROUTE CACHING
-if (isset($_SERVER['VERCEL']) || env('VERCEL') == '1') {
+// LOGIKA VERCEL (Setup temporer storage untuk /tmp)
+if (isset($_SERVER['VERCEL'])) {
     $app->useStoragePath('/tmp/storage');
-    
-    // DISABLE ROUTE CACHE - PENTING!
-    putenv('APP_ROUTES_CACHE=');
-    $_ENV['APP_ROUTES_CACHE'] = '';
     
     $paths = [
         '/tmp/storage/framework/views',
