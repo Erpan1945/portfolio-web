@@ -4,9 +4,12 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// 1. HANYA SET FOLDER SEMENTARA YANG BENAR-BENAR PERLU
-// (Kita HAPUS APP_ROUTES_CACHE dan APP_CONFIG_CACHE agar Laravel selalu baca kode terbaru!)
+// 1. KEMBALIKAN CACHE INTI, TAPI JANGAN CACHE ROUTES!
+// (Ini memastikan Laravel bisa booting, tapi rute selalu terbaca yang terbaru)
 $tmpSettings = [
+    'APP_SERVICES_CACHE' => '/tmp/services.php',
+    'APP_PACKAGES_CACHE' => '/tmp/packages.php',
+    'APP_CONFIG_CACHE' => '/tmp/config.php',
     'VIEW_COMPILED_PATH' => '/tmp/storage/framework/views'
 ];
 
@@ -21,7 +24,8 @@ $tmpDirs = [
     '/tmp/storage/framework/views',
     '/tmp/storage/framework/cache/data',
     '/tmp/storage/framework/sessions',
-    '/tmp/storage/logs'
+    '/tmp/storage/logs',
+    '/tmp/bootstrap/cache'
 ];
 
 foreach ($tmpDirs as $dir) {
