@@ -66,7 +66,8 @@ $tmpSettings = [
     'APP_SERVICES_CACHE' => '/tmp/services.php',
     'APP_PACKAGES_CACHE' => '/tmp/packages.php',
     'APP_CONFIG_CACHE' => '/tmp/config.php',
-    'VIEW_COMPILED_PATH' => '/tmp/storage/framework/views'
+    'VIEW_COMPILED_PATH' => '/tmp/storage/framework/views',
+    'APP_ROUTES_CACHE' => '',  // DISABLE route cache di Vercel
 ];
 
 foreach ($tmpSettings as $key => $value) {
@@ -92,15 +93,24 @@ foreach ($tmpDirs as $dir) {
 }
 
 // CLEAR ROUTE CACHE FILES DI VERCEL (penting!)
-// Routes perlu di-re-compile setiap deployment
-if (isset($_SERVER['VERCEL'])) {
-    $cacheFiles = [
-        __DIR__ . '/../bootstrap/cache/routes-v7.php',
-        '/tmp/bootstrap/cache/routes-v7.php'
+// Routes perlu di-re-compile setiap deployment, jangan cache
+if (isset($_SERVER['VERCEL']) || env('VERCEL') == '1') {
+    $cachePaths = [
+        __DIR__ . '/../bootstrap/cache',
+        '/tmp/bootstrap/cache',
+        __DIR__ . '/../storage/framework/cache',
+        '/tmp/storage/framework/cache'
     ];
-    foreach ($cacheFiles as $file) {
-        if (file_exists($file)) {
-            @unlink($file);
+    
+    foreach ($cachePaths as $path) {
+        if (is_dir($path)) {
+            // Delete all files dalam cache directory
+            $files = glob($path . '/*');
+            foreach ($files as $file) {
+                if (is_file($file)) {
+                    @unlink($file);
+                }
+            }
         }
     }
 }
