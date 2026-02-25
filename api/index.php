@@ -1,14 +1,44 @@
 <?php
-// Paksa PHP menampilkan semua error
+// Tampilkan error jika ada
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+// 1. PAKSA LARAVEL MENGGUNAKAN FILE CACHE DI /TMP
+$tmpSettings = [
+    'APP_SERVICES_CACHE' => '/tmp/services.php',
+    'APP_PACKAGES_CACHE' => '/tmp/packages.php',
+    'APP_CONFIG_CACHE' => '/tmp/config.php',
+    'APP_ROUTES_CACHE' => '/tmp/routes.php',
+    'APP_EVENTS_CACHE' => '/tmp/events.php',
+    'VIEW_COMPILED_PATH' => '/tmp/storage/framework/views'
+];
+
+foreach ($tmpSettings as $key => $value) {
+    putenv("$key=$value");
+    $_ENV[$key] = $value;
+    $_SERVER[$key] = $value;
+}
+
+// 2. BUAT STRUKTUR FOLDER SEMENTARA DI MEMORI VERCEL
+$tmpDirs = [
+    '/tmp/storage/framework/views',
+    '/tmp/storage/framework/cache/data',
+    '/tmp/storage/framework/sessions',
+    '/tmp/storage/logs',
+    '/tmp/bootstrap/cache'
+];
+
+foreach ($tmpDirs as $dir) {
+    if (!is_dir($dir)) {
+        mkdir($dir, 0755, true);
+    }
+}
+
+// 3. JALANKAN LARAVEL
 try {
-    // Panggil inti aplikasi Laravel
     require __DIR__ . '/../public/index.php';
 } catch (\Throwable $e) {
-    // Jika Laravel crash saat booting, tangkap dan tampilkan di layar
     echo "<div style='font-family: sans-serif; padding: 20px; background: #ffebee; color: #c62828; border-radius: 8px;'>";
     echo "<h1>🚨 Fatal Boot Error Terdeteksi</h1>";
     echo "<h2>Pesan Error:</h2>";
