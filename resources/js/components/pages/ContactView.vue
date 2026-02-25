@@ -25,7 +25,7 @@ const submitForm = async () => {
     successMessage.value = '';
 
     try {
-        const response = await axios.post('/api/contact', form.value);
+        const response = await axios.post('/api/send-message', form.value);
         
         // Tampilkan pesan sukses dan kosongkan form
         successMessage.value = response.data.message;
