@@ -19,10 +19,14 @@ const form = ref({
 const isSubmitting = ref(false);
 const successMessage = ref('');
 
+// simpan pesan validasi
+const errors = ref({});
+
 // Fungsi untuk mengirim data
 const submitForm = async () => {
     isSubmitting.value = true;
     successMessage.value = '';
+    errors.value = {};
 
     try {
         // GANTI BAGIAN INI: Tambahkan headers khusus
@@ -40,9 +44,14 @@ const submitForm = async () => {
     } catch (error) {
         console.error("Gagal mengirim pesan:", error);
         if (error.response && error.response.status === 422) {
-             alert("Gagal: Mohon periksa kembali form Anda.");
+            // ambil pesan validasi dari server
+            console.log('validation response', error.response.data);
+            if (error.response.data && error.response.data.errors) {
+                errors.value = error.response.data.errors;
+            }
+            alert("Gagal: Mohon periksa kembali form Anda.");
         } else {
-             alert("Terjadi kesalahan saat mengirim pesan. Silakan coba lagi.");
+            alert("Terjadi kesalahan saat mengirim pesan. Silakan coba lagi.");
         }
     } finally {
         isSubmitting.value = false;
@@ -72,15 +81,18 @@ const submitForm = async () => {
                     <div class="space-y-2">
                         <label class="font-bold text-sm uppercase tracking-wide text-gray-500">Nama</label>
                         <input v-model="form.name" type="text" required class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-xl p-4 focus:ring-2 focus:ring-purple-600 outline-none transition" placeholder="John Doe">
+                        <p v-if="errors.name" class="text-red-600 text-sm mt-1">{{ errors.name[0] }}</p>
                     </div>
                     <div class="space-y-2">
                         <label class="font-bold text-sm uppercase tracking-wide text-gray-500">Email</label>
                         <input v-model="form.email" type="email" required class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-xl p-4 focus:ring-2 focus:ring-purple-600 outline-none transition" placeholder="john@example.com">
+                        <p v-if="errors.email" class="text-red-600 text-sm mt-1">{{ errors.email[0] }}</p>
                     </div>
                 </div>
                 <div class="space-y-2">
                     <label class="font-bold text-sm uppercase tracking-wide text-gray-500">Pesan</label>
                     <textarea v-model="form.message" rows="6" required class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-xl p-4 focus:ring-2 focus:ring-purple-600 outline-none transition" placeholder="Ceritakan projectmu..."></textarea>
+                    <p v-if="errors.message" class="text-red-600 text-sm mt-1">{{ errors.message[0] }}</p>
                 </div>
                 
                 <button type="submit" :disabled="isSubmitting" class="w-full md:w-auto px-10 py-4 bg-black dark:bg-white text-white dark:text-black font-bold rounded-full text-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition shadow-xl disabled:opacity-50">
