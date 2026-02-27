@@ -1,5 +1,5 @@
 <?php
-// 1. TANGANI CORS & PREFLIGHT OPTIONS
+// 1. TANGANI CORS (Wajib untuk Vue Axios)
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     header('Access-Control-Allow-Origin: *');
     header('Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE');
@@ -7,25 +7,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);
 }
 
-// 2. PAKSA HTTPS (Mencegah Redirect 301)
+// ====================================================================
+// 2. KUNCI UTAMA: "MEMBOHONGI" LARAVEL AGAR TIDAK MEMOTONG /api
+// ====================================================================
+$_SERVER['SCRIPT_NAME'] = '/index.php';
+$_SERVER['SCRIPT_FILENAME'] = '/index.php';
+$_SERVER['PHP_SELF'] = '/index.php';
+
+// Paksa HTTPS mencegah redirect
 $_SERVER['HTTPS'] = 'on';
 $_SERVER['HTTP_X_FORWARDED_PROTO'] = 'https';
 
-// ==========================================
-// 3. INI KUNCI RAHASIANYA: KEMBALIKAN PREFIX /api
-// ==========================================
-$uri = $_SERVER['REQUEST_URI'] ?? '';
-// Jika Vercel memotong '/api', kita pasang kembali secara manual!
-if ($uri !== '' && strpos($uri, '/api') !== 0) {
-    $_SERVER['REQUEST_URI'] = '/api' . $uri;
-}
-
-// Tampilkan error jika ada masalah server
+// Tampilkan error jika ada
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// 4. CACHE INTI KE FOLDER SEMENTARA (/tmp) VERCEL
+// 3. CACHE INTI KE FOLDER SEMENTARA VERCEL
 $tmpSettings = [
     'APP_SERVICES_CACHE' => '/tmp/services.php',
     'APP_PACKAGES_CACHE' => '/tmp/packages.php',
@@ -39,7 +37,7 @@ foreach ($tmpSettings as $key => $value) {
     $_SERVER[$key] = $value;
 }
 
-// 5. BUAT DIREKTORI SEMENTARA
+// 4. BUAT DIREKTORI SEMENTARA
 $tmpDirs = [
     '/tmp/storage/framework/views',
     '/tmp/storage/framework/cache/data',
@@ -54,7 +52,7 @@ foreach ($tmpDirs as $dir) {
     }
 }
 
-// 6. BOOTING LARAVEL
+// 5. BOOTING LARAVEL
 try {
     require __DIR__ . '/../public/index.php';
 } catch (\Throwable $e) {
