@@ -173,7 +173,7 @@ onMounted(() => {
                         <div class="pt-8">
                             <h3 class="text-sm font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-6 border-b border-gray-200 dark:border-gray-700 pb-2 inline-block">Tech Stack & Tools</h3>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                <div v-for="skill in ['Laravel', 'Vue.js', 'Tailwind', 'MySQL', 'PostgreSQL', 'Git', 'Inertia', 'JavaScript', 'Figma']" :key="skill" 
+                                <div v-for="skill in ['Laravel', 'Vue.js', 'Tailwind', 'MySQL', 'PostgreSQL', 'Git', 'JavaScript', 'Figma']" :key="skill" 
                                     class="flex items-center gap-3 p-3 bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 hover:-translate-y-1 transition-transform">
                                     
                                     <div class="w-2 h-2 rounded-full" 

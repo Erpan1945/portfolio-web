@@ -31,6 +31,11 @@ Route::get('/deploy/migrate/{secret}', function ($secret) {
     }
 });
 
+// jika Vercel menghapus prefiks "/api" pada request POST, kita
+// tetap butuh rute login bekerja. Tambahkan rute POST login di sisi web
+// (tanpa middleware api) sehingga path /login diterima.
+Route::post('/login', [\App\Http\Controllers\AuthController::class, 'login']);
+
 // CATCH-ALL ROUTE UNTUK SPA - HARUS PALING AKHIR!
 // Tangkap semua request yang bukan static files atau API
 Route::fallback(function () {
