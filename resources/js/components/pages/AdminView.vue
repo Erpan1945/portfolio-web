@@ -4,18 +4,18 @@
             <h1 class="text-3xl font-black mb-10 tracking-tighter">Admin<span class="text-purple-500">.</span></h1>
             <nav class="space-y-4">
                 <button @click="activeTab = 'projects'" :class="{'bg-purple-600 text-white shadow-lg': activeTab === 'projects', 'text-gray-400 hover:text-white hover:bg-gray-800': activeTab !== 'projects'}" class="w-full text-left px-4 py-3 rounded-xl font-bold transition flex items-center gap-3">
-                    🚀 Projects
+                    Projects
                 </button>
                 <button @click="activeTab = 'certificates'" :class="{'bg-purple-600 text-white shadow-lg': activeTab === 'certificates', 'text-gray-400 hover:text-white hover:bg-gray-800': activeTab !== 'certificates'}" class="w-full text-left px-4 py-3 rounded-xl font-bold transition flex items-center gap-3">
-                    🏆 Certificates
+                    Certificates
                 </button>
                 <button @click="activeTab = 'settings'" :class="{'bg-purple-600 text-white shadow-lg': activeTab === 'settings', 'text-gray-400 hover:text-white hover:bg-gray-800': activeTab !== 'settings'}" class="w-full text-left px-4 py-3 rounded-xl font-bold transition flex items-center gap-3">
-                    ⚙️ Settings
+                    Settings
                 </button>
                 
                 <div class="pt-8 mt-8 border-t border-gray-800">
                     <button @click="handleLogout" class="w-full text-left px-4 py-3 rounded-xl text-red-400 hover:bg-red-900/20 font-bold transition flex items-center gap-3">
-                        🚪 Log Out
+                        Log Out
                     </button>
                 </div>
             </nav>
@@ -26,7 +26,7 @@
             <div v-if="activeTab === 'projects'" class="max-w-6xl mx-auto">
                 <h2 class="text-3xl font-bold mb-8 text-gray-800 flex justify-between items-center">
                     Manajemen Project
-                    <span v-if="isEditing" class="text-sm bg-yellow-100 text-yellow-800 py-1 px-3 rounded-full border border-yellow-200 shadow-sm">⚠️ Mode Edit</span>
+                    <span v-if="isEditing" class="text-sm bg-yellow-100 text-yellow-800 py-1 px-3 rounded-full border border-yellow-200 shadow-sm">Mode Edit</span>
                 </h2>
 
                 <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-200 mb-10 transition-all hover:shadow-md">
@@ -105,11 +105,11 @@
             <div v-if="activeTab === 'certificates'" class="max-w-6xl mx-auto">
                 <h2 class="text-3xl font-bold mb-8 text-gray-800 flex justify-between items-center">
                     Manajemen Sertifikat
-                    <span v-if="isEditingCert" class="text-sm bg-yellow-100 text-yellow-800 py-1 px-3 rounded-full border border-yellow-200 shadow-sm">⚠️ Mode Edit</span>
+                    <span v-if="isEditingCert" class="text-sm bg-yellow-100 text-yellow-800 py-1 px-3 rounded-full border border-yellow-200 shadow-sm">Mode Edit</span>
                 </h2>
 
                 <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-200 mb-10 transition-all hover:shadow-md">
-                    <h3 class="text-xl font-bold mb-6 text-gray-700 border-b pb-4">{{ isEditingCert ? 'Edit Sertifikat' : '✨ Tambah Sertifikat Baru' }}</h3>
+                    <h3 class="text-xl font-bold mb-6 text-gray-700 border-b pb-4">{{ isEditingCert ? 'Edit Sertifikat' : 'Tambah Sertifikat Baru' }}</h3>
                     
                     <form @submit.prevent="submitCertificate" class="space-y-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -61,7 +61,7 @@ class DatabaseSeeder extends Seeder
     \App\Models\User::factory()->create([
         'name' => 'Erpannya Ayaya',
         'email' => 'atmint@me.com', // Email login kamu
-        'password' => \Illuminate\Support\Facades\Hash::make('160825delta'), // Password kamu
+        'password' => '160825delta', // Password kamu (akan di-hash otomatis oleh model casts)
     ]);
 
     }
