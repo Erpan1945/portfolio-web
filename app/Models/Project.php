@@ -16,6 +16,7 @@ class Project extends Model
         'description',
         'image',
         'link',
+        'tech_stack',
         'is_active'
     ];
 }

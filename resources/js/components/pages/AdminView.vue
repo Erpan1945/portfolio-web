@@ -297,6 +297,18 @@ const cancelEdit = () => {
 };
 
 const submitProject = async () => {
+    if (!form.value.title || !form.value.description) {
+        alert('Judul dan Deskripsi harus diisi!');
+        return;
+    }
+
+    // Validasi ukuran gambar
+    const MAX_IMAGE_SIZE = 2048 * 1024; // 2048 KB = 2 MB
+    if (form.value.image && form.value.image.size > MAX_IMAGE_SIZE) {
+        alert(`Ukuran gambar terlalu besar!\nBatas maksimal: 2 MB\nUkuran file: ${(form.value.image.size / 1024 / 1024).toFixed(2)} MB`);
+        return;
+    }
+
     const formData = new FormData();
     formData.append('title', form.value.title);
     formData.append('description', form.value.description);
@@ -306,17 +318,35 @@ const submitProject = async () => {
 
     try {
         const token = localStorage.getItem('token');
-        const config = { headers: { Authorization: `Bearer ${token}` } };
+        if (!token) {
+            alert('Token tidak ditemukan. Silakan login ulang.');
+            return;
+        }
+
+        const config = { 
+            headers: { 
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'multipart/form-data'
+            } 
+        };
+
+        let response;
         if (isEditing.value) {
             formData.append('_method', 'PUT'); 
-            await axios.post(`/api/projects/${editId.value}`, formData, config);
+            response = await axios.post(`/api/projects/${editId.value}`, formData, config);
         } else {
-            await axios.post('/api/projects', formData, config);
+            response = await axios.post('/api/projects', formData, config);
         }
+        
+        console.log('Respons:', response.data);
         loadProjects();
         cancelEdit();
-        alert('Sukses!');
-    } catch (error) { alert('Gagal menyimpan project.'); }
+        alert('Sukses menyimpan project!');
+    } catch (error) {
+        console.error('Error detail:', error.response?.data || error.message);
+        const errorMsg = error.response?.data?.message || error.response?.statusText || error.message;
+        alert(`Gagal menyimpan project.\nError: ${errorMsg}`);
+    }
 };
 
 const deleteProject = async (id) => {
