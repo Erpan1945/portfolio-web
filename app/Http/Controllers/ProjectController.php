@@ -31,8 +31,8 @@ class ProjectController extends Controller
         // 1. Handle image upload jika ada
         $imageUrl = null;
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('projects', 's3');
-            $imageUrl = env('AWS_ENDPOINT') . '/' . env('AWS_BUCKET') . '/' . $path;
+            $path = $request->file('image')->store('projects', 'public');
+            $imageUrl = '/storage/' . $path;
         }
 
         // 2. Convert tech_stack string to JSON array
@@ -66,7 +66,7 @@ class ProjectController extends Controller
 
         $request->validate([
             'title' => 'required',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Image jadi nullable (opsional) saat edit
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'description' => 'required',
             'link' => 'nullable|url',
             'tech_stack' => 'nullable',
@@ -79,24 +79,20 @@ class ProjectController extends Controller
         
         // Convert tech_stack string to JSON array
         if($request->tech_stack) {
-             // Misal input: "Laravel, Vue, Tailwind" -> jadi ["Laravel", "Vue", "Tailwind"]
-             $arrayStack = array_map('trim', explode(',', $request->tech_stack));
-             $project->tech_stack = json_encode($arrayStack);
+            $arrayStack = array_map('trim', explode(',', $request->tech_stack));
+            $project->tech_stack = json_encode($arrayStack);
         }
 
         // 2. Cek apakah ada upload gambar baru?
         if ($request->hasFile('image')) {
-            // Hapus gambar lama dari Supabase/S3 agar tidak menumpuk sampah
-            if ($project->image) {
-                // Ambil path relatif dari URL lengkap
-                $oldPath = str_replace(env('AWS_ENDPOINT').'/'.env('AWS_BUCKET').'/', '', $project->image);
-                \Illuminate\Support\Facades\Storage::disk('s3')->delete($oldPath);
+            // Hapus gambar lama jika ada
+            if ($project->image && file_exists(public_path($project->image))) {
+                unlink(public_path($project->image));
             }
 
             // Upload gambar baru
-            $path = $request->file('image')->store('projects', 's3');
-            $url = env('AWS_ENDPOINT') . '/' . env('AWS_BUCKET') . '/' . $path;
-            $project->image = $url;
+            $path = $request->file('image')->store('projects', 'public');
+            $project->image = '/storage/' . $path;
         }
 
         $project->save();
@@ -112,10 +108,9 @@ class ProjectController extends Controller
             return response()->json(['message' => 'Project not found'], 404);
         }
 
-        // Hapus image dari S3 jika ada
-        if ($project->image) {
-            $oldPath = str_replace(env('AWS_ENDPOINT').'/'.env('AWS_BUCKET').'/', '', $project->image);
-            \Illuminate\Support\Facades\Storage::disk('s3')->delete($oldPath);
+        // Hapus image dari local storage jika ada
+        if ($project->image && file_exists(public_path($project->image))) {
+            unlink(public_path($project->image));
         }
 
         $project->delete();
