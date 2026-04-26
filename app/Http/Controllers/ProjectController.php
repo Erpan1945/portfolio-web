@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Project; // Jangan lupa import Model ini!
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProjectController extends Controller
 {
@@ -31,8 +32,8 @@ class ProjectController extends Controller
         // 1. Handle image upload jika ada
         $imageUrl = null;
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('projects', 'public');
-            $imageUrl = '/storage/' . $path;
+            $path = Storage::disk('s3')->putFile('projects', $request->file('image'));
+            $imageUrl = env('AWS_ENDPOINT') . '/' . env('AWS_BUCKET') . '/' . $path;
         }
 
         // 2. Convert tech_stack string to JSON array
@@ -86,13 +87,19 @@ class ProjectController extends Controller
         // 2. Cek apakah ada upload gambar baru?
         if ($request->hasFile('image')) {
             // Hapus gambar lama jika ada
-            if ($project->image && file_exists(public_path($project->image))) {
-                unlink(public_path($project->image));
+            if ($project->image) {
+                $oldImage = $project->image;
+                if (str_starts_with($oldImage, env('AWS_ENDPOINT'))) {
+                    $oldPath = str_replace(env('AWS_ENDPOINT').'/'.env('AWS_BUCKET').'/', '', $oldImage);
+                    Storage::disk('s3')->delete($oldPath);
+                } elseif (file_exists(public_path($oldImage))) {
+                    unlink(public_path($oldImage));
+                }
             }
 
-            // Upload gambar baru
-            $path = $request->file('image')->store('projects', 'public');
-            $project->image = '/storage/' . $path;
+            // Upload gambar baru ke Supabase/S3
+            $path = Storage::disk('s3')->putFile('projects', $request->file('image'));
+            $project->image = env('AWS_ENDPOINT') . '/' . env('AWS_BUCKET') . '/' . $path;
         }
 
         $project->save();
@@ -108,9 +115,14 @@ class ProjectController extends Controller
             return response()->json(['message' => 'Project not found'], 404);
         }
 
-        // Hapus image dari local storage jika ada
-        if ($project->image && file_exists(public_path($project->image))) {
-            unlink(public_path($project->image));
+        if ($project->image) {
+            $oldImage = $project->image;
+            if (str_starts_with($oldImage, env('AWS_ENDPOINT'))) {
+                $oldPath = str_replace(env('AWS_ENDPOINT').'/'.env('AWS_BUCKET').'/', '', $oldImage);
+                Storage::disk('s3')->delete($oldPath);
+            } elseif (file_exists(public_path($oldImage))) {
+                unlink(public_path($oldImage));
+            }
         }
 
         $project->delete();
