@@ -237,8 +237,7 @@ const submitPhoto = async () => {
 
         const response = await axios.post('/api/settings/photo', formData, {
             headers: {
-                'Content-Type': 'multipart/form-data',
-                'Authorization': `Bearer ${token}` 
+                Authorization: `Bearer ${token}`
             }
         });
 
@@ -325,8 +324,7 @@ const submitProject = async () => {
 
         const config = { 
             headers: { 
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'multipart/form-data'
+                Authorization: `Bearer ${token}`
             } 
         };
 
@@ -351,11 +349,24 @@ const submitProject = async () => {
 
 const deleteProject = async (id) => {
     if(!confirm('Yakin hapus project ini?')) return;
+    const token = localStorage.getItem('token');
+    if (!token) {
+        alert('Token tidak ditemukan. Silakan login ulang terlebih dahulu.');
+        return;
+    }
+
     try {
-        const token = localStorage.getItem('token');
-        await axios.delete(`/api/projects/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+        await axios.delete(`/api/projects/${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
         loadProjects();
-    } catch (e) { alert('Gagal hapus'); }
+    } catch (e) {
+        console.error('Error hapus project:', e.response?.data || e.message);
+        const errorMsg = e.response?.data?.message || e.response?.statusText || e.message;
+        alert(`Gagal hapus project.\nError: ${errorMsg}`);
+    }
 };
 
 
@@ -427,11 +438,24 @@ const submitCertificate = async () => {
 
 const deleteCert = async (id) => {
     if(!confirm('Hapus sertifikat ini?')) return;
+    const token = localStorage.getItem('token');
+    if (!token) {
+        alert('Token tidak ditemukan. Silakan login ulang terlebih dahulu.');
+        return;
+    }
+
     try {
-        const token = localStorage.getItem('token');
-        await axios.delete(`/api/certificates/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+        await axios.delete(`/api/certificates/${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
         loadCertificates();
-    } catch (e) { alert('Gagal hapus'); }
+    } catch (e) {
+        console.error('Error hapus sertifikat:', e.response?.data || e.message);
+        const errorMsg = e.response?.data?.message || e.response?.statusText || e.message;
+        alert(`Gagal hapus sertifikat.\nError: ${errorMsg}`);
+    }
 };
 
 // ======================= LOGOUT =======================

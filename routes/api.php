@@ -22,9 +22,14 @@ Route::middleware('auth:sanctum')->group(function () {
     // Perbaikan: Gunakan ::class di sini juga
     Route::post('/cv', [CvController::class, 'store']);
     Route::delete('/cv/{id}', [CvController::class, 'destroy']);
+
     Route::post('/projects', [ProjectController::class, 'store']);
-    Route::post('/projects/{id}', [ProjectController::class, 'update']);
+    Route::match(['post', 'put'], '/projects/{id}', [ProjectController::class, 'update']);
     Route::delete('/projects/{id}', [ProjectController::class, 'destroy']);
+
+    Route::post('/certificates', [CertificateController::class, 'store']);
+    Route::match(['post', 'put'], '/certificates/{id}', [CertificateController::class, 'update']);
+    Route::delete('/certificates/{id}', [CertificateController::class, 'destroy']);
 });
 
 Route::get('/user', function (Request $request) {
