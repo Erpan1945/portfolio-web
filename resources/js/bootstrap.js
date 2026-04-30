@@ -4,7 +4,6 @@ window.axios = axios;
 // Set default headers
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 window.axios.defaults.headers.common['Accept'] = 'application/json';
-window.axios.defaults.headers.common['Content-Type'] = 'application/json';
 
 // Add request interceptor
 window.axios.interceptors.request.use(config => {
